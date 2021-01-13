@@ -1,0 +1,57 @@
+{
+  "name": "@sequencemedia/rabbit-mq",
+  "version": "1.0.0",
+  "description": "Rabbit MQ",
+  "main": "./index.js",
+  "author": {
+    "name": "Jonathan Perry for Sequence Media Limited",
+    "email": "sequencemedia@sequencemedia.net",
+    "url": "http://sequencemedia.net"
+  },
+  "engines": {
+    "node": ">=12.19.0"
+  },
+  "scripts": {
+    "build": "npm run babel",
+    "watch": "npm run babel -- -w",
+    "clean": "rimraf lib",
+    "babel": "babel src -d lib",
+    "prepublishOnly": "npm run build",
+    "prebuild": "npm run clean",
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "pre-commit": "npm run lint && git add lib"
+  },
+  "dependencies": {
+    "amqplib": "^0.6.0",
+    "debug": "^4.3.1",
+    "rimraf": "^3.0.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-export-default-from": "^7.12.1",
+    "@babel/plugin-proposal-export-namespace-from": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/register": "^7.12.10",
+    "babel-plugin-minify-dead-code-elimination": "^0.5.1",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "core-js": "^3.8.2",
+    "eslint": "^7.17.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-import-resolver-babel-module": "^5.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.22.0",
+    "husky": "^4.3.7",
+    "terser-webpack-plugin": "^5.1.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run pre-commit"
+    }
+  }
+}
