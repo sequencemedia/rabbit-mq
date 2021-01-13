@@ -38,20 +38,32 @@ export const toString = (buffer) => (
   buffer.toString('utf8')
 )
 
-export function getFields ({ fields } = {}) {
+export function getFields ({ fields }) {
   info('getFields')
 
   if (fields) return fields
 }
 
-export function getProperties ({ properties } = {}) {
+export function getProperties ({ properties }) {
   info('getProperties')
 
   if (properties) return properties
 }
 
-export function getContent ({ content } = {}) {
+export function getContent ({ content }) {
   info('getContent')
+
+  if (content) return content
+}
+
+export function encode (content) {
+  info('encode')
+
+  return toBuffer(toJson(content))
+}
+
+export function decode (content) {
+  info('decode')
 
   return fromJson(toString(content))
 }
@@ -129,18 +141,18 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   }
 }
 
-export async function channelPublish ({ channel, exchange, content, ...params }) {
+export async function channelPublish ({ channel, exchange, ...params }) {
   info('channelPublish')
 
   return (
-    channel.publish(exchange, getRoutingKey(params), toBuffer(toJson(content)))
+    channel.publish(exchange, getRoutingKey(params), encode(getContent(params)))
   )
 }
 
 export async function channelConsume ({ channel, queue, handler, ...params }) {
   info('channelConsume')
 
-  await channel.consume(queue, handler, { noAck: true })
+  await channel.consume(queue, (message) => handler({ ...message, content: decode(getContent(message)) }), { noAck: true })
 
   return {
     ...params,
@@ -164,7 +176,7 @@ export function publish (params = {}, content = {}, routingKey = getRoutingKey(p
   )
 }
 
-export function consume (params = {}, handler = (message) => { log(message) }, routingKey = getRoutingKey(params)) {
+export function consume (params = {}, handler = (content) => { log(content) }, routingKey = getRoutingKey(params)) {
   info('consume')
 
   return (
