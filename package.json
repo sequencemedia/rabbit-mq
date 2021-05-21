@@ -23,14 +23,14 @@
     "pre-commit": "npm run lint && git add lib"
   },
   "dependencies": {
-    "amqplib": "^0.7.1",
+    "amqplib": "^0.8.0",
     "debug": "^4.3.1",
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.13.16",
-    "@babel/core": "^7.14.2",
-    "@babel/eslint-parser": "^7.14.2",
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/eslint-parser": "^7.14.3",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-export-default-from": "^7.12.13",
     "@babel/plugin-proposal-export-namespace-from": "^7.14.2",
