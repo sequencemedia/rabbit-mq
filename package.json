@@ -43,6 +43,6 @@
     "eslint-import-resolver-babel-module": "^5.3.1",
     "husky": "^6.0.0",
     "standard": "^16.0.3",
-    "terser-webpack-plugin": "^5.1.2"
+    "terser-webpack-plugin": "^5.1.3"
   }
 }
