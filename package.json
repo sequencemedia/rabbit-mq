@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
@@ -20,12 +20,12 @@
     "prebuild": "npm run clean",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "pre-commit": "npm run lint && git add lib"
+    "gulp": "gulp --color",
+    "pre-commit": "npm run lint && git add lib && npm run gulp -- pre-commit"
   },
   "dependencies": {
     "amqplib": "^0.8.0",
-    "debug": "^4.3.2",
-    "rimraf": "^3.0.2"
+    "debug": "^4.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.15.7",
@@ -36,7 +36,6 @@
     "@babel/plugin-proposal-export-namespace-from": "^7.14.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/register": "^7.15.3",
-    "babel-plugin-minify-dead-code-elimination": "^0.5.1",
     "babel-plugin-module-resolver": "^4.1.0",
     "core-js": "^3.18.0",
     "eslint": "^7.32.0",
@@ -45,7 +44,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "husky": "^7.0.2",
-    "terser-webpack-plugin": "^5.2.4"
+    "gulp": "^4.0.2",
+    "husky": "^7.0.2"
   }
 }
