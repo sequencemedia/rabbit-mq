@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
