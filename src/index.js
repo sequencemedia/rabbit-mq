@@ -170,8 +170,14 @@ export function publish (params = {}, content = {}, routingKey = getRoutingKey(p
       .then(channelAssertExchange)
       .then(channelAssertQueue)
       .then(channelPublish)
-      .catch(({ message }) => {
+      .catch((e) => {
+        const {
+          message
+        } = e
+
         log(`Publish failed with message "${message}"`)
+
+        throw e
       })
   )
 }
@@ -186,8 +192,14 @@ export function consume (params = {}, handler = (content) => { log(content) }, r
       .then(channelAssertQueue)
       .then(channelBindQueue)
       .then(channelConsume)
-      .catch(({ message }) => {
+      .catch((e) => {
+        const {
+          message
+        } = e
+
         log(`Consume failed with message "${message}"`)
+
+        throw e
       })
   )
 }
