@@ -161,6 +161,20 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
   }
 }
 
+const getErrorMessage = ({ message = 'No error message defined' }) => message
+
+function handlePublishError (e) {
+  log(`Publish failed with message "${getErrorMessage(e)}"`)
+
+  throw e
+}
+
+function handleConsumeError (e) {
+  log(`Consume failed with message "${getErrorMessage(e)}"`)
+
+  throw e
+}
+
 export function publish (params = {}, content = {}, routingKey = getRoutingKey(params)) {
   info('publish')
 
@@ -170,15 +184,7 @@ export function publish (params = {}, content = {}, routingKey = getRoutingKey(p
       .then(channelAssertExchange)
       .then(channelAssertQueue)
       .then(channelPublish)
-      .catch((e) => {
-        const {
-          message
-        } = e
-
-        log(`Publish failed with message "${message}"`)
-
-        throw e
-      })
+      .catch(handlePublishError)
   )
 }
 
@@ -192,14 +198,6 @@ export function consume (params = {}, handler = (content) => { log(content) }, r
       .then(channelAssertQueue)
       .then(channelBindQueue)
       .then(channelConsume)
-      .catch((e) => {
-        const {
-          message
-        } = e
-
-        log(`Consume failed with message "${message}"`)
-
-        throw e
-      })
+      .catch(handleConsumeError)
   )
 }
