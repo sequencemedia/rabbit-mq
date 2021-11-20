@@ -64,7 +64,7 @@ workflows:
   version: 2
   commit-workflow:
     jobs:
-      - lint_and_test:
+      - lint:
           filters:
             branches:
               only: master
