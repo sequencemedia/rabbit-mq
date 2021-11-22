@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.0.50",
+  "version": "1.0.51",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
@@ -9,7 +9,7 @@
     "url": "http://sequencemedia.net"
   },
   "engines": {
-    "node": ">=12.19.0"
+    "node": ">=16.13.0"
   },
   "scripts": {
     "build": "npm run babel",
