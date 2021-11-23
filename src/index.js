@@ -3,9 +3,9 @@ import debug from 'debug'
 import amqp from 'amqplib'
 
 const log = debug('@sequencemedia')
-const info = debug('@sequencemedia:rabbit-mq')
+const info = debug('@sequencemedia/rabbit-mq')
 
-log('`@sequencemedia:rabbit-mq` is awake')
+log('`@sequencemedia/rabbit-mq` is awake')
 
 export const getUsername = ({ username = 'guest' }) => username
 
@@ -70,6 +70,8 @@ export function decode (content) {
 }
 
 export function transform (params) {
+  info('transform')
+
   const username = getUsername(params)
   const password = getPassword(params)
   const hostname = getHostname(params)
