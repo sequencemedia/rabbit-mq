@@ -87,7 +87,7 @@ export function transform (params) {
 export async function amqpConnect (params) {
   info('amqpConnect')
 
-  const connection = CONNECTION ?? await amqp.connect(transform(params))
+  const connection = CONNECTION || await amqp.connect(transform(params))
 
   return {
     ...params,
@@ -98,7 +98,7 @@ export async function amqpConnect (params) {
 export async function connectionCreateChannel ({ connection, ...params }) {
   info('connectionCreateChannel')
 
-  const channel = CHANNEL ?? await connection.createChannel()
+  const channel = CHANNEL || await connection.createChannel()
 
   return {
     ...params,
