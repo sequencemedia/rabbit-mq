@@ -7,6 +7,12 @@ const info = debug('@sequencemedia/rabbit-mq')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
+const CLOSE = 60 * 1000
+
+let CONNECTION = null
+
+const CONNECTIONS = new Map()
+
 export const getUsername = ({ username = 'guest' }) => username
 
 export const getPassword = ({ password = 'guest' }) => password
@@ -84,7 +90,7 @@ export function transform (params) {
 export async function amqpConnect (params) {
   info('amqpConnect')
 
-  const connection = await amqp.connect(transform(params))
+  const connection = CONNECTION || (CONNECTION = await amqp.connect(transform(params)))
 
   return {
     ...params,
@@ -95,10 +101,23 @@ export async function amqpConnect (params) {
 export async function amqpDisconnect ({ connection, ...params }) {
   info('amqpDisconnect')
 
-  await connection.close()
+  if (CONNECTIONS.has(connection)) clearTimeout(CONNECTIONS.get(connection))
+
+  CONNECTIONS.set(connection, setTimeout(async () => {
+    try {
+      if (connection === CONNECTION) CONNECTION = null
+
+      CONNECTIONS.delete(connection)
+
+      await connection.close()
+    } catch (e) {
+      info(e)
+    }
+  }, CLOSE))
 
   return {
-    ...params
+    ...params,
+    connection
   }
 }
 
@@ -109,6 +128,7 @@ export async function connectionCreateChannel ({ connection, ...params }) {
 
   return {
     ...params,
+    connection,
     channel
   }
 }
@@ -116,9 +136,13 @@ export async function connectionCreateChannel ({ connection, ...params }) {
 export async function channelAssertExchange ({ channel, ...params }) {
   info('channelAssertExchange')
 
+  const EXCHANGE = getExchange(params)
+
   const {
     exchange
-  } = await channel.assertExchange(getExchange(params), 'topic', { durable: true, autoDelete: true })
+  } = await channel.assertExchange(EXCHANGE, 'topic', { durable: true }) // , autoDelete: true })
+
+  info(EXCHANGE, exchange)
 
   return {
     ...params,
@@ -130,9 +154,13 @@ export async function channelAssertExchange ({ channel, ...params }) {
 export async function channelAssertQueue ({ channel, ...params }) {
   info('channelAssertQueue')
 
+  const QUEUE = getQueue(params)
+
   const {
     queue
-  } = await channel.assertQueue(getQueue(params), { durable: true, autoDelete: true })
+  } = await channel.assertQueue(QUEUE, { durable: true }) //, autoDelete: true })
+
+  info(QUEUE, queue)
 
   return {
     ...params,
@@ -144,7 +172,11 @@ export async function channelAssertQueue ({ channel, ...params }) {
 export async function channelBindQueue ({ channel, queue, exchange, ...params }) {
   info('channelBindQueue')
 
-  await channel.bindQueue(queue, exchange, getRoutingKey(params))
+  const ROUTINGKEY = getRoutingKey(params)
+
+  await channel.bindQueue(queue, exchange, ROUTINGKEY)
+
+  info(queue, exchange, ROUTINGKEY)
 
   return {
     ...params,
@@ -154,22 +186,40 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   }
 }
 
-export async function channelPublish ({ channel, exchange, ...params }) {
+export async function channelPublish ({ channel, queue, ...params }) {
   info('channelPublish')
 
-  return (
-    channel.publish(exchange, getRoutingKey(params), encode(getContent(params)))
-  )
+  const CONTENT = getContent(params)
+
+  channel.sendToQueue(queue, encode(CONTENT)) // returns boolean
+
+  return {
+    ...params,
+    queue
+  }
 }
 
 export async function channelConsume ({ channel, queue, handler, ...params }) {
   info('channelConsume')
 
-  await channel.consume(queue, async (message) => {
-    await channel.ack(message)
+  await channel.consume(queue, async function consumer (message) {
+    info('consumer')
+
+    const {
+	  fields: {
+        exchange,
+        routingKey
+	  } = {}
+    } = message
+
+    channel.ack(message)
+
+    const CONTENT = getContent(message)
+
+    info({ exchange, routingKey })
 
     return (
-      handler({ ...message, content: decode(getContent(message)) })
+      handler({ ...message, content: decode(CONTENT) })
     )
   }) // , { noAck: true })
 
@@ -194,10 +244,10 @@ function handleConsumeError (e) {
   throw e
 }
 
-export function publish (params = {}, content = {}, routingKey = getRoutingKey(params)) {
+export async function publish (params = {}, content = {}, routingKey = getRoutingKey(params)) {
   info('publish')
 
-  return (
+  return await (
     amqpConnect({ ...params, content, routingKey })
       .then(connectionCreateChannel)
       .then(channelAssertExchange)
@@ -208,10 +258,10 @@ export function publish (params = {}, content = {}, routingKey = getRoutingKey(p
   )
 }
 
-export function consume (params = {}, handler = (content) => { log(content) }, routingKey = getRoutingKey(params)) {
+export async function consume (params = {}, handler = (content) => { log(content) }, routingKey = getRoutingKey(params)) {
   info('consume')
 
-  return (
+  return await (
     amqpConnect({ ...params, handler, routingKey })
       .then(connectionCreateChannel)
       .then(channelAssertExchange)
@@ -221,3 +271,9 @@ export function consume (params = {}, handler = (content) => { log(content) }, r
       .catch(handleConsumeError)
   )
 }
+
+process.on('exit', async () => {
+  console.log('before exit ...')
+  // if (CONNECTION) await CONNECTION.close()
+  console.log('EXIT')
+})
