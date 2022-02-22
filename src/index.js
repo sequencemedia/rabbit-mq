@@ -46,37 +46,37 @@ export const toString = (buffer) => (
 )
 
 export function getFields ({ fields }) {
-  info('getFields')
+  log('getFields')
 
   if (fields) return fields
 }
 
 export function getProperties ({ properties }) {
-  info('getProperties')
+  log('getProperties')
 
   if (properties) return properties
 }
 
 export function getContent ({ content }) {
-  info('getContent')
+  log('getContent')
 
   if (content) return content
 }
 
 export function encode (content) {
-  info('encode')
+  log('encode')
 
   return toBuffer(toJson(content))
 }
 
 export function decode (content) {
-  info('decode')
+  log('decode')
 
   return fromJson(toString(content))
 }
 
 export function transform (params) {
-  info('transform')
+  log('transform')
 
   const username = getUsername(params)
   const password = getPassword(params)
@@ -88,7 +88,7 @@ export function transform (params) {
 }
 
 export async function amqpConnect (params) {
-  info('amqpConnect')
+  log('amqpConnect')
 
   const connection = CONNECTION || (CONNECTION = await amqp.connect(transform(params)))
 
@@ -99,11 +99,13 @@ export async function amqpConnect (params) {
 }
 
 export async function amqpDisconnect ({ connection, ...params }) {
-  info('amqpDisconnect')
+  log('amqpDisconnect')
 
   if (CONNECTIONS.has(connection)) clearTimeout(CONNECTIONS.get(connection))
 
   CONNECTIONS.set(connection, setTimeout(async function timeout () {
+    log('timeout')
+
     try {
       if (connection === CONNECTION) CONNECTION = null
 
@@ -122,7 +124,7 @@ export async function amqpDisconnect ({ connection, ...params }) {
 }
 
 export async function connectionCreateChannel ({ connection, ...params }) {
-  info('connectionCreateChannel')
+  log('connectionCreateChannel')
 
   const channel = await connection.createChannel()
 
@@ -134,7 +136,7 @@ export async function connectionCreateChannel ({ connection, ...params }) {
 }
 
 export async function channelAssertExchange ({ channel, ...params }) {
-  info('channelAssertExchange')
+  log('channelAssertExchange')
 
   const EXCHANGE = getExchange(params)
 
@@ -152,7 +154,7 @@ export async function channelAssertExchange ({ channel, ...params }) {
 }
 
 export async function channelAssertQueue ({ channel, ...params }) {
-  info('channelAssertQueue')
+  log('channelAssertQueue')
 
   const QUEUE = getQueue(params)
 
@@ -170,7 +172,7 @@ export async function channelAssertQueue ({ channel, ...params }) {
 }
 
 export async function channelBindQueue ({ channel, queue, exchange, ...params }) {
-  info('channelBindQueue')
+  log('channelBindQueue')
 
   const ROUTINGKEY = getRoutingKey(params)
 
@@ -187,7 +189,7 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
 }
 
 export async function channelPublish ({ channel, queue, ...params }) {
-  info('channelPublish')
+  log('channelPublish')
 
   const CONTENT = getContent(params)
 
@@ -202,7 +204,7 @@ export async function channelPublish ({ channel, queue, ...params }) {
 }
 
 export async function channelConsume ({ channel, queue, handler, ...params }) {
-  info('channelConsume')
+  log('channelConsume')
 
   await channel.consume(queue, async function consumer (message) {
     info('consumer')
@@ -244,7 +246,7 @@ function handleConsumeError (e) {
 }
 
 export async function publish (params = {}, content = {}, routingKey = getRoutingKey(params)) {
-  info('publish')
+  log('publish')
 
   return await (
     amqpConnect({ ...params, content, routingKey })
@@ -258,7 +260,7 @@ export async function publish (params = {}, content = {}, routingKey = getRoutin
 }
 
 export async function consume (params = {}, handler = (content) => { log(content) }, routingKey = getRoutingKey(params)) {
-  info('consume')
+  log('consume')
 
   return await (
     amqpConnect({ ...params, handler, routingKey })
@@ -270,9 +272,3 @@ export async function consume (params = {}, handler = (content) => { log(content
       .catch(handleConsumeError)
   )
 }
-
-process.on('exit', async () => {
-  console.log('before exit ...')
-  // if (CONNECTION) await CONNECTION.close()
-  console.log('EXIT')
-})
