@@ -19,7 +19,7 @@ export const getVirtualHost = ({ virtualHost = '' }) => virtualHost
 
 export const getExchange = ({ exchange }) => exchange
 
-export const getQueue = ({ queue }) => queue
+export const getQueue = ({ queueName }) => queueName
 
 export const getRoutingKey = ({ routingKey }) => routingKey
 
@@ -108,7 +108,7 @@ export async function channelAssertExchange ({ channel, ...params }) {
 
   const {
     exchange
-  } = await channel.assertExchange(getExchange(params), 'topic', { durable: true })
+  } = await channel.assertExchange(getExchange(params), 'topic', { durable: true, autoDelete: true })
 
   return {
     ...params,
@@ -122,7 +122,7 @@ export async function channelAssertQueue ({ channel, ...params }) {
 
   const {
     queue
-  } = await channel.assertQueue(getQueue(params), { durable: true })
+  } = await channel.assertQueue(getQueue(params), { durable: true, autoDelete: true })
 
   return {
     ...params,
