@@ -234,13 +234,13 @@ function handleCloseError (e) {
 }
 
 function handlePublishError (e) {
-  log(`Publish failed with message "${getErrorMessage(e)}"`)
+  info(`Publish failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
 
 function handleConsumeError (e) {
-  log(`Consume failed with message "${getErrorMessage(e)}"`)
+  info(`Consume failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
