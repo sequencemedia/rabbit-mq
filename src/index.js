@@ -7,9 +7,6 @@ const info = debug('@sequencemedia/rabbit-mq')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
-let CONNECTION
-let CHANNEL
-
 export const getUsername = ({ username = 'guest' }) => username
 
 export const getPassword = ({ password = 'guest' }) => password
@@ -87,7 +84,7 @@ export function transform (params) {
 export async function amqpConnect (params) {
   info('amqpConnect')
 
-  const connection = CONNECTION || (CONNECTION = await amqp.connect(transform(params)))
+  const connection = await amqp.connect(transform(params))
 
   return {
     ...params,
@@ -95,10 +92,20 @@ export async function amqpConnect (params) {
   }
 }
 
+export async function amqpDisconnect ({ connection, ...params }) {
+  info('amqpDisconnect')
+
+  await connection.close()
+
+  return {
+    ...params
+  }
+}
+
 export async function connectionCreateChannel ({ connection, ...params }) {
   info('connectionCreateChannel')
 
-  const channel = CHANNEL || (CHANNEL = await connection.createChannel())
+  const channel = await connection.createChannel()
 
   return {
     ...params,
@@ -158,7 +165,13 @@ export async function channelPublish ({ channel, exchange, ...params }) {
 export async function channelConsume ({ channel, queue, handler, ...params }) {
   info('channelConsume')
 
-  await channel.consume(queue, (message) => handler({ ...message, content: decode(getContent(message)) }), { noAck: true })
+  await channel.consume(queue, async (message) => {
+    await channel.ack(message)
+
+    return (
+      handler({ ...message, content: decode(getContent(message)) })
+    )
+  }) // , { noAck: true })
 
   return {
     ...params,
@@ -190,6 +203,7 @@ export function publish (params = {}, content = {}, routingKey = getRoutingKey(p
       .then(channelAssertExchange)
       .then(channelAssertQueue)
       .then(channelPublish)
+      .then(amqpDisconnect)
       .catch(handlePublishError)
   )
 }
