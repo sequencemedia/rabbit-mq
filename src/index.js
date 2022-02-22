@@ -103,7 +103,7 @@ export async function amqpDisconnect ({ connection, ...params }) {
 
   if (CONNECTIONS.has(connection)) clearTimeout(CONNECTIONS.get(connection))
 
-  CONNECTIONS.set(connection, setTimeout(async () => {
+  CONNECTIONS.set(connection, setTimeout(async function timeout () {
     try {
       if (connection === CONNECTION) CONNECTION = null
 
@@ -111,7 +111,7 @@ export async function amqpDisconnect ({ connection, ...params }) {
 
       await connection.close()
     } catch (e) {
-      info(e)
+      handleCloseError(e)
     }
   }, CLOSE))
 
@@ -140,7 +140,7 @@ export async function channelAssertExchange ({ channel, ...params }) {
 
   const {
     exchange
-  } = await channel.assertExchange(EXCHANGE, 'topic', { durable: true }) // , autoDelete: true })
+  } = await channel.assertExchange(EXCHANGE, 'topic', { durable: true })
 
   info(EXCHANGE, exchange)
 
@@ -158,7 +158,7 @@ export async function channelAssertQueue ({ channel, ...params }) {
 
   const {
     queue
-  } = await channel.assertQueue(QUEUE, { durable: true }) //, autoDelete: true })
+  } = await channel.assertQueue(QUEUE, { durable: true })
 
   info(QUEUE, queue)
 
@@ -193,6 +193,8 @@ export async function channelPublish ({ channel, queue, ...params }) {
 
   channel.sendToQueue(queue, encode(CONTENT)) // returns boolean
 
+  info(queue)
+
   return {
     ...params,
     queue
@@ -205,23 +207,16 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
   await channel.consume(queue, async function consumer (message) {
     info('consumer')
 
-    const {
-	  fields: {
-        exchange,
-        routingKey
-	  } = {}
-    } = message
-
     channel.ack(message)
 
     const CONTENT = getContent(message)
 
-    info({ exchange, routingKey })
-
     return (
       handler({ ...message, content: decode(CONTENT) })
     )
-  }) // , { noAck: true })
+  })
+
+  info(queue)
 
   return {
     ...params,
@@ -231,6 +226,10 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
 }
 
 const getErrorMessage = ({ message = 'No error message defined' }) => message
+
+function handleCloseError (e) {
+  info(`Close failed with message "${getErrorMessage(e)}"`)
+}
 
 function handlePublishError (e) {
   log(`Publish failed with message "${getErrorMessage(e)}"`)
