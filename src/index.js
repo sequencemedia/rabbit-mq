@@ -7,6 +7,9 @@ const info = debug('@sequencemedia/rabbit-mq')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
+let CONNECTION
+let CHANNEL
+
 export const getUsername = ({ username = 'guest' }) => username
 
 export const getPassword = ({ password = 'guest' }) => password
@@ -84,7 +87,7 @@ export function transform (params) {
 export async function amqpConnect (params) {
   info('amqpConnect')
 
-  const connection = await amqp.connect(transform(params))
+  const connection = CONNECTION ?? await amqp.connect(transform(params))
 
   return {
     ...params,
@@ -95,7 +98,7 @@ export async function amqpConnect (params) {
 export async function connectionCreateChannel ({ connection, ...params }) {
   info('connectionCreateChannel')
 
-  const channel = await connection.createChannel()
+  const channel = CHANNEL ?? await connection.createChannel()
 
   return {
     ...params,
