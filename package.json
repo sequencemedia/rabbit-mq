@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.0.130",
+  "version": "1.0.131",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
@@ -28,7 +28,7 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.3",
+    "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.5",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
