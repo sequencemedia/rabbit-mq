@@ -188,8 +188,25 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   }
 }
 
-export async function channelPublish ({ channel, queue, ...params }) {
+export async function channelPublish ({ channel, exchange, ...params }) {
   log('channelPublish')
+
+  const ROUTINGKEY = getRoutingKey(params)
+  const CONTENT = getContent(params)
+
+  channel.publish(exchange, ROUTINGKEY, encode(CONTENT)) // returns boolean
+
+  info(exchange, ROUTINGKEY)
+
+  return {
+    ...params,
+    channel,
+    exchange
+  }
+}
+
+export async function channelQueue ({ channel, queue, ...params }) {
+  log('channelQueue')
 
   const CONTENT = getContent(params)
 
@@ -254,6 +271,20 @@ export async function publish (params = {}, content = {}, routingKey = getRoutin
       .then(channelAssertExchange)
       .then(channelAssertQueue)
       .then(channelPublish)
+      .then(amqpDisconnect)
+      .catch(handlePublishError)
+  )
+}
+
+export async function queue (params = {}, content = {}, routingKey = getRoutingKey(params)) {
+  log('queue')
+
+  return await (
+    amqpConnect({ ...params, content, routingKey })
+      .then(connectionCreateChannel)
+      .then(channelAssertExchange)
+      .then(channelAssertQueue)
+      .then(channelQueue)
       .then(amqpDisconnect)
       .catch(handlePublishError)
   )
