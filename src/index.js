@@ -2,8 +2,8 @@ import debug from 'debug'
 
 import amqp from 'amqplib'
 
-const log = debug('@sequencemedia')
-const info = debug('@sequencemedia/rabbit-mq')
+const log = debug('@sequencemedia/rabbit-mq')
+const info = debug('@sequencemedia/rabbit-mq:.')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
