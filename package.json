@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.0.148",
+  "version": "1.0.149",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "amqplib": "^0.8.0",
-    "debug": "^4.3.3"
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
