@@ -216,6 +216,7 @@ export async function channelQueue ({ channel, queue, ...params }) {
 
   return {
     ...params,
+    channel,
     queue
   }
 }
