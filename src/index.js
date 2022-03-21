@@ -3,7 +3,7 @@ import debug from 'debug'
 import amqp from 'amqplib'
 
 const log = debug('@sequencemedia/rabbit-mq')
-const info = debug('@sequencemedia/rabbit-mq:.')
+const info = debug('@sequencemedia/rabbit-mq/src')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
@@ -113,7 +113,7 @@ export async function amqpDisconnect ({ connection, ...params }) {
 
       await connection.close()
     } catch (e) {
-      handleCloseError(e)
+      handleDisconnectError(e)
     }
   }, CLOSE))
 
@@ -144,7 +144,7 @@ export async function channelAssertExchange ({ channel, ...params }) {
     exchange
   } = await channel.assertExchange(EXCHANGE, 'topic', { durable: true })
 
-  info(EXCHANGE, exchange)
+  info(EXCHANGE)
 
   return {
     ...params,
@@ -162,7 +162,7 @@ export async function channelAssertQueue ({ channel, ...params }) {
     queue
   } = await channel.assertQueue(QUEUE, { durable: true })
 
-  info(QUEUE, queue)
+  info(QUEUE)
 
   return {
     ...params,
@@ -220,11 +220,22 @@ export async function channelQueue ({ channel, queue, ...params }) {
   }
 }
 
+export async function channelClose ({ channel, ...params }) {
+  log('channelClose')
+
+  channel.close()
+
+  return {
+    ...params,
+    channel
+  }
+}
+
 export async function channelConsume ({ channel, queue, handler, ...params }) {
   log('channelConsume')
 
   await channel.consume(queue, async function consumer (message) {
-    info('consumer')
+    log('consumer')
 
     channel.ack(message)
 
@@ -246,12 +257,18 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
 
 const getErrorMessage = ({ message = 'No error message defined' }) => message
 
-function handleCloseError (e) {
-  info(`Close failed with message "${getErrorMessage(e)}"`)
+function handleDisconnectError (e) {
+  info(`Disconnect failed with message "${getErrorMessage(e)}"`)
 }
 
 function handlePublishError (e) {
   info(`Publish failed with message "${getErrorMessage(e)}"`)
+
+  throw e
+}
+
+function handleQueueError (e) {
+  info(`Queue failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
@@ -271,6 +288,7 @@ export async function publish (params = {}, content = {}, routingKey = getRoutin
       .then(channelAssertExchange)
       .then(channelAssertQueue)
       .then(channelPublish)
+      .then(channelClose)
       .then(amqpDisconnect)
       .catch(handlePublishError)
   )
@@ -285,8 +303,9 @@ export async function queue (params = {}, content = {}, routingKey = getRoutingK
       .then(channelAssertExchange)
       .then(channelAssertQueue)
       .then(channelQueue)
+      .then(channelClose)
       .then(amqpDisconnect)
-      .catch(handlePublishError)
+      .catch(handleQueueError)
   )
 }
 
