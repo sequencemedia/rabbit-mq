@@ -3,7 +3,6 @@ import debug from 'debug'
 import amqp from 'amqplib'
 
 const log = debug('@sequencemedia/rabbit-mq')
-const info = debug('@sequencemedia/rabbit-mq/src')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
@@ -144,8 +143,6 @@ export async function channelAssertExchange ({ channel, ...params }) {
     exchange
   } = await channel.assertExchange(EXCHANGE, 'topic', { durable: true })
 
-  info(EXCHANGE)
-
   return {
     ...params,
     channel,
@@ -162,8 +159,6 @@ export async function channelAssertQueue ({ channel, ...params }) {
     queue
   } = await channel.assertQueue(QUEUE, { durable: true })
 
-  info(QUEUE)
-
   return {
     ...params,
     channel,
@@ -177,8 +172,6 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   const ROUTINGKEY = getRoutingKey(params)
 
   await channel.bindQueue(queue, exchange, ROUTINGKEY)
-
-  info(queue, exchange, ROUTINGKEY)
 
   return {
     ...params,
@@ -196,8 +189,6 @@ export async function channelPublish ({ channel, exchange, ...params }) {
 
   channel.publish(exchange, ROUTINGKEY, encode(CONTENT)) // returns boolean
 
-  info(exchange, ROUTINGKEY)
-
   return {
     ...params,
     channel,
@@ -212,8 +203,6 @@ export async function channelQueue ({ channel, queue, ...params }) {
 
   channel.sendToQueue(queue, encode(CONTENT)) // returns boolean
 
-  info(queue)
-
   return {
     ...params,
     channel,
@@ -224,7 +213,7 @@ export async function channelQueue ({ channel, queue, ...params }) {
 export async function channelClose ({ channel, ...params }) {
   log('channelClose')
 
-  channel.close()
+  await channel.close()
 
   return {
     ...params,
@@ -247,8 +236,6 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
     )
   })
 
-  info(queue)
-
   return {
     ...params,
     channel,
@@ -259,23 +246,23 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
 const getErrorMessage = ({ message = 'No error message defined' }) => message
 
 function handleDisconnectError (e) {
-  info(`Disconnect failed with message "${getErrorMessage(e)}"`)
+  log(`Disconnect failed with message "${getErrorMessage(e)}"`)
 }
 
 function handlePublishError (e) {
-  info(`Publish failed with message "${getErrorMessage(e)}"`)
+  log(`Publish failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
 
 function handleQueueError (e) {
-  info(`Queue failed with message "${getErrorMessage(e)}"`)
+  log(`Queue failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
 
 function handleConsumeError (e) {
-  info(`Consume failed with message "${getErrorMessage(e)}"`)
+  log(`Consume failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
