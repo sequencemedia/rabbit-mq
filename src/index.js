@@ -218,17 +218,19 @@ export async function channelClose ({ channel, ...params }) {
 export async function channelConsume ({ channel, queue, handler, ...params }) {
   log('channelConsume')
 
-  await channel.consume(queue, async function consumer (message) {
-    log('consumer')
+  return await (
+    channel.consume(queue, function consumer (message) {
+      log('consumer')
 
-    channel.ack(message)
+      channel.ack(message)
 
-    const CONTENT = getContent(message)
+      const CONTENT = getContent(message)
 
-    return (
-      handler({ ...message, content: decode(CONTENT) })
-    )
-  })
+      return (
+        handler({ ...message, content: decode(CONTENT) })
+      )
+    })
+  )
 }
 
 const getErrorMessage = ({ message = 'No error message defined' }) => message
