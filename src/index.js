@@ -219,14 +219,14 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
   log('channelConsume')
 
   return await (
-    channel.consume(queue, function consumer (message) {
+    channel.consume(queue, async function consumer (message) {
       log('consumer')
 
       channel.ack(message)
 
       const CONTENT = getContent(message)
 
-      return (
+      return await (
         handler({ ...message, content: decode(CONTENT) })
       )
     })
