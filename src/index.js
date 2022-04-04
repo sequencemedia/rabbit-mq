@@ -115,11 +115,6 @@ export async function amqpDisconnect ({ connection, ...params }) {
       handleDisconnectError(e)
     }
   }, CLOSE))
-
-  return {
-    ...params,
-    connection
-  }
 }
 
 export async function connectionCreateChannel ({ connection, ...params }) {
@@ -216,8 +211,7 @@ export async function channelClose ({ channel, ...params }) {
   await channel.close()
 
   return {
-    ...params,
-    channel
+    ...params
   }
 }
 
@@ -235,12 +229,6 @@ export async function channelConsume ({ channel, queue, handler, ...params }) {
       handler({ ...message, content: decode(CONTENT) })
     )
   })
-
-  return {
-    ...params,
-    channel,
-    queue
-  }
 }
 
 const getErrorMessage = ({ message = 'No error message defined' }) => message
