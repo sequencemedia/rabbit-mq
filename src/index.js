@@ -12,6 +12,8 @@ let CONNECTION = null
 
 const CONNECTIONS = new Map()
 
+setInterval(() => log({ connections: CONNECTIONS.size, connection: Boolean(CONNECTION) }), CLOSE / 2)
+
 export const getUsername = ({ username = 'guest' }) => username
 
 export const getPassword = ({ password = 'guest' }) => password
