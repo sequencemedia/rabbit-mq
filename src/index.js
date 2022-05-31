@@ -2,9 +2,7 @@ import debug from 'debug'
 
 import amqp from 'amqplib'
 
-import {
-  connections
-} from './args'
+import connections from './args'
 
 const log = debug('@sequencemedia/rabbit-mq')
 
