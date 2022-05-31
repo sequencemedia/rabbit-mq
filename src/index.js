@@ -2,6 +2,10 @@ import debug from 'debug'
 
 import amqp from 'amqplib'
 
+import {
+  connections
+} from './args'
+
 const log = debug('@sequencemedia/rabbit-mq')
 
 log('`@sequencemedia/rabbit-mq` is awake')
@@ -12,7 +16,7 @@ let CONNECTION = null
 
 const CONNECTIONS = new Map()
 
-setInterval(() => log({ connections: CONNECTIONS.size, connection: Boolean(CONNECTION) }), CLOSE / 2)
+if (connections()) setInterval(() => log({ connections: CONNECTIONS.size, connection: Boolean(CONNECTION) }), CLOSE / 2)
 
 export const getUsername = ({ username = 'guest' }) => username
 
