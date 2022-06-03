@@ -24,7 +24,7 @@
     "pre-commit": "npm run lint && git add lib && npm run gulp -- pre-commit"
   },
   "dependencies": {
-    "amqplib": "^0.9.1",
+    "amqplib": "^0.10.0",
     "debug": "^4.3.4"
   },
   "devDependencies": {
