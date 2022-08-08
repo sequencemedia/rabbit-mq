@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.1.67",
+  "version": "1.1.68",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
@@ -24,7 +24,7 @@
     "pre-commit": "npm run lint && git add lib && npm run gulp -- pre-commit"
   },
   "dependencies": {
-    "amqplib": "^0.10.1",
+    "amqplib": "^0.10.2",
     "debug": "^4.3.4"
   },
   "devDependencies": {
