@@ -14,6 +14,8 @@ let CONNECTION = null
 
 const CONNECTIONS = new Map()
 
+const HANDLER = (content) => { log(content) }
+
 if (connections()) setInterval(() => log({ connections: CONNECTIONS.size, connection: Boolean(CONNECTION) }), CLOSE / 2)
 
 export const getUsername = ({ username = 'guest' }) => username
@@ -93,7 +95,7 @@ export function transform (params) {
 export async function amqpConnect (params) {
   log('amqpConnect')
 
-  const connection = CONNECTION || (CONNECTION = await amqp.connect(transform(params)))
+  const connection = CONNECTION ?? (CONNECTION = await amqp.connect(transform(params)))
 
   return {
     ...params,
@@ -291,7 +293,7 @@ export async function queue (params = {}, content = {}, routingKey = getRoutingK
   )
 }
 
-export async function consume (params = {}, handler = (content) => { log(content) }, routingKey = getRoutingKey(params)) {
+export async function consume (params = {}, handler = HANDLER, routingKey = getRoutingKey(params)) {
   log('consume')
 
   return await (
