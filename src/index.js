@@ -214,18 +214,32 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   }
 }
 
-export async function channelPublish ({ channel, exchange, ...params }) {
+export async function channelPublish ({ channel, exchange, ...params }, n = 0) {
   log('channelPublish')
 
-  const ROUTINGKEY = getRoutingKey(params)
-  const CONTENT = getContent(params)
+  try {
+    const ROUTINGKEY = getRoutingKey(params)
+    const CONTENT = getContent(params)
 
-  channel.publish(exchange, ROUTINGKEY, encode(CONTENT)) // returns boolean
+    channel.publish(exchange, ROUTINGKEY, encode(CONTENT)) // returns boolean
 
-  return {
-    ...params,
-    channel,
-    exchange
+    return {
+      ...params,
+      channel,
+      exchange
+    }
+  } catch (e) {
+    log(`Publish failed with code "${getErrorCode(e)}" and message "${getErrorMessage(e)}"`)
+
+    if (n !== LIMIT) {
+      await sleepFor(DURATION)
+
+      return (
+        await channelPublish({ ...params, channel, exchange }, n + 1)
+      )
+    }
+
+    throw new Error(`Limit reached for channel "${channel}" and exchange "${exchange}"`)
   }
 }
 
@@ -253,23 +267,39 @@ export async function channelClose ({ channel, ...params }) {
   }
 }
 
-export async function channelConsume ({ channel, queue, handler, ...params }) {
+export async function channelConsume ({ channel, queue, handler, ...params }, n = 0) {
   log('channelConsume')
 
-  return await (
-    channel.consume(queue, async function consumer (message) {
-      log('consumer')
+  try {
+    return await (
+      channel.consume(queue, async function consumer (message) {
+        log('consumer')
 
-      channel.ack(message)
+        channel.ack(message)
 
-      const CONTENT = getContent(message)
+        const CONTENT = getContent(message)
 
-      return await (
-        handler({ ...message, content: decode(CONTENT) })
+        return await (
+          handler({ ...message, content: decode(CONTENT) })
+        )
+      })
+    )
+  } catch (e) {
+    log(`Consume failed with code "${getErrorCode(e)}" and message "${getErrorMessage(e)}"`)
+
+    if (n !== LIMIT) {
+      await sleepFor(DURATION)
+
+      return (
+        await channelConsume({ ...params, channel, queue, handler }, n + 1)
       )
-    })
-  )
+    }
+
+    throw new Error(`Limit reached for channel "${channel}" and queue "${queue}"`)
+  }
 }
+
+const getErrorCode = ({ code = 'No error code defined' }) => code
 
 const getErrorMessage = ({ message = 'No error message defined' }) => message
 
