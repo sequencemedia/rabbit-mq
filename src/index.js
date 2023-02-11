@@ -8,6 +8,10 @@ const log = debug('@sequencemedia/rabbit-mq')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
+const DURATION = 1000
+
+const LIMIT = 500
+
 const CLOSE = 60 * 1000
 
 let CONNECTION = null
@@ -17,6 +21,14 @@ const CONNECTIONS = new Map()
 const HANDLER = (content) => { log(content) }
 
 if (connections()) setInterval(() => log({ connections: CONNECTIONS.size, connection: Boolean(CONNECTION) }), CLOSE / 2)
+
+function sleepFor (duration = DURATION) {
+  return (
+    new Promise((resolve) => {
+      setTimeout(resolve, duration)
+    })
+  )
+}
 
 export const getUsername = ({ username = 'guest' }) => username
 
@@ -92,14 +104,34 @@ export function transform (params) {
   return `amqp://${username}:${password}@${hostname}:${port}/${virtualHost}`
 }
 
-export async function amqpConnect (params) {
+export async function amqpConnect (params, n = 0) {
   log('amqpConnect')
 
-  const connection = CONNECTION ?? (CONNECTION = await amqp.connect(transform(params)))
+  try {
+    const connection = CONNECTION ?? (CONNECTION = await amqp.connect(transform(params)))
 
-  return {
-    ...params,
-    connection
+    return {
+      ...params,
+      connection
+    }
+  } catch (e) {
+    const {
+      code
+    } = e
+
+    if (code === 'ECONNREFUSED') {
+      if (n !== LIMIT) {
+        await sleepFor(DURATION)
+
+        return (
+          await amqpConnect(params, n + 1)
+        )
+      }
+
+      throw new Error(`Limit reached for "${transform(params)}"`)
+    }
+
+    throw e
   }
 }
 
