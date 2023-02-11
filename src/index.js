@@ -120,8 +120,6 @@ export async function amqpConnect (params, n = 0) {
       message
     } = e
 
-    log(`Error in "amqpConnect" has code "${code}" with message "${message}"`)
-
     if (code === 'ECONNREFUSED' || message.startsWith('Handshake terminated by server')) {
       if (n !== LIMIT) {
         await sleepFor(DURATION)
@@ -231,8 +229,14 @@ export async function channelPublish ({ channel, exchange, ...params }, n = 0) {
       channel,
       exchange
     }
-  } catch (e) {
-    log(`Publish failed with code "${getErrorCode(e)}" and message "${getErrorMessage(e)}"`)
+  } catch ({
+    code,
+    message
+  }) {
+    log({
+      ...(code ? { code } : {}),
+      message
+    })
 
     if (n !== LIMIT) {
       await sleepFor(DURATION)
@@ -287,8 +291,14 @@ export async function channelConsume ({ channel, queue, handler, ...params }, n 
         )
       })
     )
-  } catch (e) {
-    log(`Consume failed with code "${getErrorCode(e)}" and message "${getErrorMessage(e)}"`)
+  } catch ({
+    code,
+    message
+  }) {
+    log({
+      ...(code ? { code } : {}),
+      message
+    })
 
     if (n !== LIMIT) {
       await sleepFor(DURATION)
@@ -302,9 +312,7 @@ export async function channelConsume ({ channel, queue, handler, ...params }, n 
   }
 }
 
-const getErrorCode = ({ code = 'No error code defined' }) => code
-
-const getErrorMessage = ({ message = 'No error message defined' }) => message
+const getErrorMessage = ({ message = 'N/A' }) => message
 
 function handleDisconnectError (e) {
   log(`Disconnect failed with message "${getErrorMessage(e)}"`)
