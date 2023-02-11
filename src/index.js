@@ -115,7 +115,7 @@ export async function amqpConnect (params, n = 0) {
       connection
     }
   } catch (e) {
-    const code = getErrorMessage(e)
+    const code = getErrorCode(e)
 
     log(`Error in "amqpConnect" has code "${code}" with message ${getErrorMessage(e)}"`)
 
