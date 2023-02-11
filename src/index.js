@@ -115,11 +115,14 @@ export async function amqpConnect (params, n = 0) {
       connection
     }
   } catch (e) {
-    const code = getErrorCode(e)
+    const {
+      code,
+      message
+    } = e
 
-    log(`Error in "amqpConnect" has code "${code}" with message ${getErrorMessage(e)}"`)
+    log(`Error in "amqpConnect" has code "${code}" with message "${message}"`)
 
-    if (code === 'ECONNREFUSED') {
+    if (code === 'ECONNREFUSED' || message.startsWith('Handshake terminated by server')) {
       if (n !== LIMIT) {
         await sleepFor(DURATION)
 
