@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "1.1.193",
+  "version": "1.1.194",
   "description": "Rabbit MQ",
   "main": "./index.js",
   "author": {
@@ -37,7 +37,7 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/register": "^7.18.9",
     "babel-plugin-module-resolver": "^5.0.0",
-    "core-js": "^3.27.2",
+    "core-js": "^3.28.0",
     "eslint": "^8.34.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-import-resolver-babel-module": "^5.3.2",
