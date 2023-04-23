@@ -19,9 +19,7 @@
     "prepublishOnly": "npm run build",
     "prebuild": "npm run clean",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix",
-    "gulp": "gulp --color",
-    "pre-commit": "npm run lint && git add lib && npm run gulp -- pre-commit"
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "amqplib": "^0.10.3",
@@ -44,7 +42,6 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
-    "gulp": "^4.0.2",
     "husky": "^8.0.3"
   }
 }
