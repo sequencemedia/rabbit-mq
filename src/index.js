@@ -104,7 +104,7 @@ export function transform (params) {
   return `amqp://${username}:${password}@${hostname}:${port}/${virtualHost}`
 }
 
-export async function amqpConnect (params, n = 0) {
+export async function amqpConnect (params, i = 1) {
   log('amqpConnect')
 
   try {
@@ -121,11 +121,14 @@ export async function amqpConnect (params, n = 0) {
     } = e
 
     if (code === 'ECONNREFUSED' || message.startsWith('Handshake terminated by server')) {
-      if (n !== LIMIT) {
+      if (i !== LIMIT) {
         await sleepFor(DURATION)
 
+        const j = i + 1
+
+        log(`... (${j} of ${LIMIT})`)
         return (
-          await amqpConnect(params, n + 1)
+          await amqpConnect(params, j)
         )
       }
 
@@ -215,7 +218,7 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   }
 }
 
-export async function channelPublish ({ channel, exchange, ...params }, n = 0) {
+export async function channelPublish ({ channel, exchange, ...params }, i = 1) {
   log('channelPublish')
 
   try {
@@ -238,11 +241,14 @@ export async function channelPublish ({ channel, exchange, ...params }, n = 0) {
       message
     })
 
-    if (n !== LIMIT) {
+    if (i !== LIMIT) {
       await sleepFor(DURATION)
 
+      const j = i + 1
+
+      log(`... (${j} of ${LIMIT})`)
       return (
-        await channelPublish({ ...params, channel, exchange }, n + 1)
+        await channelPublish({ ...params, channel, exchange }, j)
       )
     }
 
@@ -274,7 +280,7 @@ export async function channelClose ({ channel, ...params }) {
   }
 }
 
-export async function channelConsume ({ channel, queue, handler, ...params }, n = 0) {
+export async function channelConsume ({ channel, queue, handler, ...params }, i = 1) {
   log('channelConsume')
 
   try {
@@ -300,11 +306,14 @@ export async function channelConsume ({ channel, queue, handler, ...params }, n 
       message
     })
 
-    if (n !== LIMIT) {
+    if (i !== LIMIT) {
       await sleepFor(DURATION)
 
+      const j = i + 1
+
+      log(`... (${j} of ${LIMIT})`)
       return (
-        await channelConsume({ ...params, channel, queue, handler }, n + 1)
+        await channelConsume({ ...params, channel, queue, handler }, j)
       )
     }
 
