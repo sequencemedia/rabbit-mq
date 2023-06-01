@@ -5,6 +5,8 @@ import amqp from 'amqplib'
 import connections from './args'
 
 const log = debug('@sequencemedia/rabbit-mq')
+const error = debug('@sequencemedia/rabbit-mq:error')
+const info = debug('@sequencemedia/rabbit-mq:info')
 
 log('`@sequencemedia/rabbit-mq` is awake')
 
@@ -126,7 +128,7 @@ export async function amqpConnect (params, i = 1) {
 
         const j = i + 1
 
-        log(`... (${j} of ${LIMIT})`)
+        info(`... (${j} of ${LIMIT})`)
         return (
           await amqpConnect(params, j)
         )
@@ -236,7 +238,7 @@ export async function channelPublish ({ channel, exchange, ...params }, i = 1) {
     code,
     message
   }) {
-    log({
+    error({
       ...(code ? { code } : {}),
       message
     })
@@ -246,7 +248,7 @@ export async function channelPublish ({ channel, exchange, ...params }, i = 1) {
 
       const j = i + 1
 
-      log(`... (${j} of ${LIMIT})`)
+      info(`... (${j} of ${LIMIT})`)
       return (
         await channelPublish({ ...params, channel, exchange }, j)
       )
@@ -301,7 +303,7 @@ export async function channelConsume ({ channel, queue, handler, ...params }, i 
     code,
     message
   }) {
-    log({
+    error({
       ...(code ? { code } : {}),
       message
     })
@@ -311,7 +313,7 @@ export async function channelConsume ({ channel, queue, handler, ...params }, i 
 
       const j = i + 1
 
-      log(`... (${j} of ${LIMIT})`)
+      info(`... (${j} of ${LIMIT})`)
       return (
         await channelConsume({ ...params, channel, queue, handler }, j)
       )
@@ -324,23 +326,23 @@ export async function channelConsume ({ channel, queue, handler, ...params }, i 
 const getErrorMessage = ({ message = 'N/A' }) => message
 
 function handleDisconnectError (e) {
-  log(`Disconnect failed with message "${getErrorMessage(e)}"`)
+  error(`Disconnect failed with message "${getErrorMessage(e)}"`)
 }
 
 function handlePublishError (e) {
-  log(`Publish failed with message "${getErrorMessage(e)}"`)
+  error(`Publish failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
 
 function handleQueueError (e) {
-  log(`Queue failed with message "${getErrorMessage(e)}"`)
+  error(`Queue failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
 
 function handleConsumeError (e) {
-  log(`Consume failed with message "${getErrorMessage(e)}"`)
+  error(`Consume failed with message "${getErrorMessage(e)}"`)
 
   throw e
 }
