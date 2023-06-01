@@ -3,12 +3,12 @@
   "version": "1.2.0",
   "description": "Rabbit MQ",
   "main": "./index.js",
-  "license": "ISC",
   "author": {
     "name": "Jonathan Perry for Sequence Media Limited",
     "email": "sequencemedia@sequencemedia.net",
     "url": "http://sequencemedia.net"
   },
+  "license": "ISC",
   "engines": {
     "node": ">=16.13.0"
   },
