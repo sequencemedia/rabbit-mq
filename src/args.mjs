@@ -1,6 +1,6 @@
 import debug from 'debug'
 
-import MAP from './argv'
+import MAP from './argv.mjs'
 
 const log = debug('@sequencemedia/rabbit-mq:args')
 
