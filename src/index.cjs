@@ -1,8 +1,8 @@
-import debug from 'debug'
+const debug = require('debug')
 
-import amqp from 'amqplib'
+const amqp = require('amqplib')
 
-import connections from './args'
+const connections = require('./args.cjs')
 
 const log = debug('@sequencemedia/rabbit-mq')
 const error = debug('@sequencemedia/rabbit-mq:error')
@@ -32,69 +32,69 @@ function sleepFor (duration = DURATION) {
   )
 }
 
-export const getUsername = ({ username = 'guest' }) => username
+const getUsername = ({ username = 'guest' }) => username
 
-export const getPassword = ({ password = 'guest' }) => password
+const getPassword = ({ password = 'guest' }) => password
 
-export const getHostname = ({ hostname = 'localhost' }) => hostname
+const getHostname = ({ hostname = 'localhost' }) => hostname
 
-export const getPort = ({ port = 5672 }) => port
+const getPort = ({ port = 5672 }) => port
 
-export const getVirtualHost = ({ virtualHost = '' }) => virtualHost
+const getVirtualHost = ({ virtualHost = '' }) => virtualHost
 
-export const getExchange = ({ exchange }) => exchange
+const getExchange = ({ exchange }) => exchange
 
-export const getQueue = ({ queueName }) => queueName
+const getQueue = ({ queueName }) => queueName
 
-export const getRoutingKey = ({ routingKey }) => routingKey
+const getRoutingKey = ({ routingKey }) => routingKey
 
-export const toJson = (value) => (
+const toJson = (value) => (
   JSON.stringify(value)
 )
 
-export const fromJson = (value) => (
+const fromJson = (value) => (
   JSON.parse(value)
 )
 
-export const toBuffer = (string) => (
+const toBuffer = (string) => (
   Buffer.from(string, 'utf8')
 )
 
-export const toString = (buffer) => (
+const toString = (buffer) => (
   buffer.toString('utf8')
 )
 
-export function getFields ({ fields }) {
+function getFields ({ fields }) {
   log('getFields')
 
   if (fields) return fields
 }
 
-export function getProperties ({ properties }) {
+function getProperties ({ properties }) {
   log('getProperties')
 
   if (properties) return properties
 }
 
-export function getContent ({ content }) {
+function getContent ({ content }) {
   log('getContent')
 
   if (content) return content
 }
 
-export function encode (content) {
+function encode (content) {
   log('encode')
 
   return toBuffer(toJson(content))
 }
 
-export function decode (content) {
+function decode (content) {
   log('decode')
 
   return fromJson(toString(content))
 }
 
-export function transform (params) {
+function transform (params) {
   log('transform')
 
   const username = getUsername(params)
@@ -106,7 +106,7 @@ export function transform (params) {
   return `amqp://${username}:${password}@${hostname}:${port}/${virtualHost}`
 }
 
-export async function amqpConnect (params, i = 1) {
+async function amqpConnect (params, i = 1) {
   log('amqpConnect')
 
   try {
@@ -141,7 +141,7 @@ export async function amqpConnect (params, i = 1) {
   }
 }
 
-export async function amqpDisconnect ({ connection, ...params }) {
+async function amqpDisconnect ({ connection, ...params }) {
   log('amqpDisconnect')
 
   if (CONNECTIONS.has(connection)) clearTimeout(CONNECTIONS.get(connection))
@@ -161,7 +161,7 @@ export async function amqpDisconnect ({ connection, ...params }) {
   }, CLOSE))
 }
 
-export async function connectionCreateChannel ({ connection, ...params }) {
+async function connectionCreateChannel ({ connection, ...params }) {
   log('connectionCreateChannel')
 
   const channel = await connection.createChannel()
@@ -173,7 +173,7 @@ export async function connectionCreateChannel ({ connection, ...params }) {
   }
 }
 
-export async function channelAssertExchange ({ channel, ...params }) {
+async function channelAssertExchange ({ channel, ...params }) {
   log('channelAssertExchange')
 
   const EXCHANGE = getExchange(params)
@@ -189,7 +189,7 @@ export async function channelAssertExchange ({ channel, ...params }) {
   }
 }
 
-export async function channelAssertQueue ({ channel, ...params }) {
+async function channelAssertQueue ({ channel, ...params }) {
   log('channelAssertQueue')
 
   const QUEUE = getQueue(params)
@@ -205,7 +205,7 @@ export async function channelAssertQueue ({ channel, ...params }) {
   }
 }
 
-export async function channelBindQueue ({ channel, queue, exchange, ...params }) {
+async function channelBindQueue ({ channel, queue, exchange, ...params }) {
   log('channelBindQueue')
 
   const ROUTINGKEY = getRoutingKey(params)
@@ -220,7 +220,7 @@ export async function channelBindQueue ({ channel, queue, exchange, ...params })
   }
 }
 
-export async function channelPublish ({ channel, exchange, ...params }, i = 1) {
+async function channelPublish ({ channel, exchange, ...params }, i = 1) {
   log('channelPublish')
 
   try {
@@ -258,7 +258,7 @@ export async function channelPublish ({ channel, exchange, ...params }, i = 1) {
   }
 }
 
-export async function channelQueue ({ channel, queue, ...params }) {
+async function channelQueue ({ channel, queue, ...params }) {
   log('channelQueue')
 
   const CONTENT = getContent(params)
@@ -272,7 +272,7 @@ export async function channelQueue ({ channel, queue, ...params }) {
   }
 }
 
-export async function channelClose ({ channel, ...params }) {
+async function channelClose ({ channel, ...params }) {
   log('channelClose')
 
   await channel.close()
@@ -282,7 +282,7 @@ export async function channelClose ({ channel, ...params }) {
   }
 }
 
-export async function channelConsume ({ channel, queue, handler, ...params }, i = 1) {
+async function channelConsume ({ channel, queue, handler, ...params }, i = 1) {
   log('channelConsume')
 
   try {
@@ -347,7 +347,7 @@ function handleConsumeError (e) {
   throw e
 }
 
-export async function publish (params = {}, content = {}, routingKey = getRoutingKey(params)) {
+async function publish (params = {}, content = {}, routingKey = getRoutingKey(params)) {
   log('publish')
 
   return await (
@@ -362,7 +362,7 @@ export async function publish (params = {}, content = {}, routingKey = getRoutin
   )
 }
 
-export async function queue (params = {}, content = {}, routingKey = getRoutingKey(params)) {
+async function queue (params = {}, content = {}, routingKey = getRoutingKey(params)) {
   log('queue')
 
   return await (
@@ -377,7 +377,7 @@ export async function queue (params = {}, content = {}, routingKey = getRoutingK
   )
 }
 
-export async function consume (params = {}, handler = HANDLER, routingKey = getRoutingKey(params)) {
+async function consume (params = {}, handler = HANDLER, routingKey = getRoutingKey(params)) {
   log('consume')
 
   return await (
@@ -389,4 +389,38 @@ export async function consume (params = {}, handler = HANDLER, routingKey = getR
       .then(channelConsume)
       .catch(handleConsumeError)
   )
+}
+
+module.exports = {
+  getUsername,
+  getPassword,
+  getHostname,
+  getPort,
+  getVirtualHost,
+  getExchange,
+  getQueue,
+  getRoutingKey,
+  toJson,
+  fromJson,
+  toBuffer,
+  toString,
+  getFields,
+  getProperties,
+  getContent,
+  encode,
+  decode,
+  transform,
+  amqpConnect,
+  amqpDisconnect,
+  connectionCreateChannel,
+  channelAssertExchange,
+  channelAssertQueue,
+  channelBindQueue,
+  channelPublish,
+  channelQueue,
+  channelClose,
+  channelConsume,
+  publish,
+  queue,
+  consume
 }
