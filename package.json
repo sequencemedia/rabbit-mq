@@ -20,14 +20,14 @@
   },
   "dependencies": {
     "amqplib": "^0.10.4",
-    "debug": "^4.3.5",
+    "debug": "^4.3.6",
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
     "@babel/preset-env": "^7.25.0",
     "@sequencemedia/eslint-config-standard": "^0.0.17",
-    "@sequencemedia/hooks": "^1.0.507",
+    "@sequencemedia/hooks": "^1.0.508",
     "core-js": "^3.37.1",
     "eslint": "^9.8.0",
     "globals": "^15.8.0",
