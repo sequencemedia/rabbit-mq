@@ -22,4 +22,7 @@
 # Deps
 .depsrc
 
+# Hooks
+.husky/hooks
+
 build
