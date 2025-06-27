@@ -24,7 +24,7 @@
     "yargs-parser": "^22.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.4",
+    "@babel/core": "^7.27.7",
     "@babel/preset-env": "^7.27.2",
     "@sequencemedia/eslint-config-standard": "^0.2.69",
     "core-js": "^3.43.0",
