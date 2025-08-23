@@ -1,6 +1,6 @@
 {
   "name": "@sequencemedia/rabbit-mq",
-  "version": "2.0.229",
+  "version": "2.0.230",
   "description": "Rabbit MQ",
   "main": "./src/index.mjs",
   "type": "module",
