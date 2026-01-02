@@ -29,7 +29,7 @@
     "@sequencemedia/eslint-config-standard": "^0.2.107",
     "core-js": "^3.47.0",
     "eslint": "^9.39.2",
-    "globals": "^16.5.0",
+    "globals": "^17.0.0",
     "husky": "^9.1.7"
   },
   "exports": {
