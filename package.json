@@ -24,12 +24,12 @@
     "yargs-parser": "^22.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
     "@sequencemedia/eslint-config-standard": "^0.2.107",
-    "core-js": "^3.47.0",
-    "eslint": "^9.39.2",
-    "globals": "^17.0.0",
+    "core-js": "^3.49.0",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0",
     "husky": "^9.1.7"
   },
   "exports": {
