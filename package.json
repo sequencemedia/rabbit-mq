@@ -19,7 +19,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "amqplib": "^1.0.2",
+    "amqplib": "^1.0.3",
     "debug": "^4.4.3",
     "yargs-parser": "^22.0.0"
   },
