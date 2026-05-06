@@ -19,13 +19,13 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "amqplib": "^1.0.4",
+    "amqplib": "^1.0.5",
     "debug": "^4.4.3",
     "yargs-parser": "^22.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.3",
+    "@babel/preset-env": "^7.29.5",
     "@sequencemedia/eslint-config-standard": "^0.2.107",
     "core-js": "^3.49.0",
     "eslint": "^10.3.0",
