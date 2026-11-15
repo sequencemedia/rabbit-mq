@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky"
+    "prepare": "node husky.mjs"
   },
   "dependencies": {
     "amqplib": "^2.3.1",
