@@ -19,7 +19,7 @@
     "prepare": "node husky.mjs"
   },
   "dependencies": {
-    "amqplib": "^2.3.1",
+    "amqplib": "^2.3.3",
     "debug": "^4.4.3",
     "yargs-parser": "^22.0.0"
   },
