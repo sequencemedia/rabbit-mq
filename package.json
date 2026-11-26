@@ -19,14 +19,14 @@
     "prepare": "node husky.mjs"
   },
   "dependencies": {
-    "amqplib": "^2.4.1",
+    "amqplib": "^2.4.2",
     "debug": "^4.4.3",
     "yargs-parser": "^22.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
     "@babel/preset-env": "7.29.7",
-    "@sequencemedia/eslint-config-standard": "0.4.4",
+    "@sequencemedia/eslint-config-standard": "0.4.5",
     "core-js": "^3.51.0",
     "eslint": "10.15.0",
     "globals": "^17.14.0",
